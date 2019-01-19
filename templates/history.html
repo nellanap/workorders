@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <table class="table table-bordered">
+        <thead>
+            <th>Apartment</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Date</th>
+        </thead>
+        <tbody>
+            {% for update in updates %}
+            <tr>
+                <td>{{ update.apartment }}</td>
+                <td>{{ update.type }}</td>
+                <td>{{ update.description }}</td>
+                <td>{{ update.status }}</td>
+                <td>{{ update.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

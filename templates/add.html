@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <form action="/add" method="post">
+        <div class="form-group">
+            <input name="apartment" placeholder="Apartment" type="text"/>
+        </div>
+        <div class="form-group">
+            <input name="type" placeholder="Type of Issue" type="text"/>
+        </div>
+        <div class="form-group">
+            <input name="description" placeholder="Description of Issue" type="text"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+{% endblock %}
