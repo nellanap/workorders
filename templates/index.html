@@ -10,8 +10,6 @@
             <th>Apartment</th>
             <th>Type</th>
             <th>Description</th>
-            <th>Latest Status</th>
-            <th>Date</th>
         </thead>
         <tbody>
             {% for workorder in open_workorders %}
@@ -19,8 +17,6 @@
                 <td>{{ workorder.apartment }}</td>
                 <td>{{ workorder.type }}</td>
                 <td>{{ workorder.description }}</td>
-                <td>{{ workorder.status }}</td>
-                <td>{{ workorder.timestamp }}</td>
             </tr>
             {% endfor %}
         </tbody>
