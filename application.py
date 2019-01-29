@@ -13,18 +13,36 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
+
+class Update(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.Text, nullable=True)
+    workorder_id = db.Column(db.Integer, db.ForeignKey('workorder.id'))
+
+    def __init__(self, status, workorder_id):
+        self.status = status
+        self.workorder_id = workorder_id
+
 class Workorder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     apartment = db.Column(db.Text, nullable=True)
     type = db.Column(db.Text, nullable=True)
     description = db.Column(db.Text, nullable=True)
     closed = db.Column(db.Integer, nullable=True)
+    updates = db.relationship('Update', backref='workorder', lazy='dynamic')
 
     def __init__(self, apartment, type, description, closed):
         self.apartment = apartment
         self.type = type
         self.description = description
         self.closed = closed
+
+
+
+
+# Creates a new database but "heroku pg:reset DATABASE" first
+# db.create_all()
+# db.session.commit()
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -52,11 +70,11 @@ def add():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
+        # Add new workorder
         apartment=request.form.get("apartment")
         type=request.form.get("type")
         description=request.form.get("description")
         closed = 0
-
         new_workorder = Workorder(apartment, type, description, closed)
         db.session.add(new_workorder)
         db.session.commit()
@@ -73,11 +91,30 @@ def close():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
-        closed = request.form.get("closed")
+        # Change workorder to closed
         workorder_id = request.form.get("workorder_id")
+        closed_workorder = Workorder.query.get(workorder_id)
+        closed_workorder.closed = 1
+        db.session.commit()
 
-        closed_workorder = Workorder.query.filter_by(id=workorder_id).first()
-        closed_workorder.closed = closed_workorder
+        return render_template("test.html", closed_workorder=closed_workorder)
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        open_workorders = Workorder.query.filter_by(closed=0)
+        return render_template("close.html", open_workorders=open_workorders)
+
+@app.route("/update", methods=["GET", "POST"])
+def update():
+    """Add an update to a workorder"""
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+
+        # Add new status
+        workorder_id = request.form.get("workorder_id")
+        status = request.form.get("status")
+        new_update = Update(status, workorder_id)
+        db.session.add(new_update)
         db.session.commit()
 
         return redirect("/")
@@ -85,4 +122,4 @@ def close():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         open_workorders = Workorder.query.filter_by(closed=0)
-        return render_template("close.html", open_workorders=open_workorders)
+        return render_template("update.html", open_workorders=open_workorders)
