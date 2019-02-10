@@ -10,19 +10,28 @@
             <th>Apartment</th>
             <th>Type</th>
             <th>Description</th>
-            <th>Status</th>
             <th>Timestamp</th>
+            <th>Select</th>
         </thead>
         <tbody>
+            <form action="/" method="post">
             {% for workorder in open_workorders %}
             <tr>
                 <td>{{ workorder.apartment }}</td>
                 <td>{{ workorder.type }}</td>
                 <td>{{ workorder.description }}</td>
-                <td>{{ workorder.status }}</td>
                 <td>{{ moment(workorder.timestamp).format('LLL') }}</td>
+                <td><input type="radio" name="workorder_id" value="{{ workorder.id }}"</td>
             </tr>
             {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><button class="btn btn-primary" type="submit">Update</button></td>
+            </tr>
+            </form>
         </tbody>
     </table>
 {% endblock %}

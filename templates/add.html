@@ -6,7 +6,14 @@
             <input name="apartment" placeholder="Apartment" type="text"/>
         </div>
         <div class="form-group">
-            <input name="type" placeholder="Type of Issue" type="text"/>
+            <select class="form-control" name="type" type="text">
+                <option value="" disabled selected>Select Type</option>
+                <option value="Water">Water</option>
+                <option value="Steam">Steam</option>
+                <option value="Pests">Pests</option>
+                <option value="Electric">Electric</option>
+                <option value="Garbage">Garbage</option>
+            </select>
         </div>
         <div class="form-group">
             <input name="description" placeholder="Description of Issue" type="text"/>

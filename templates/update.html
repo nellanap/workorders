@@ -1,20 +1,46 @@
 {% extends "layout.html" %}
 
 {% block main %}
+
+    <div class="container, top-container">
+        <p class="top-text">
+            <b>Apartment</b>: {{ updates[0].workorder.apartment }}<br>
+            <b>Type</b>: {{ updates[0].workorder.type }}<br>
+            <b>Description</b>: {{ updates[0].workorder.description }}<br>
+        </p>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <th>Igor's ID</th>
+            <th>Timestamp</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>Cost</th>
+        </thead>
+        <tbody>
+            {% for update in updates %}
+            <tr>
+                <td>{{ update.type }} {{ update.count }}</td>
+                <td>{{ moment(update.timestamp).format('l') }} - {{ moment(update.timestamp).format('LT') }}</td>
+                <td>{{ update.status }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <form action="/update" method="post">
 
+        <!--Hidden input type to pass data on workorder_id-->
         <div class="form-group">
-            <select class="form-control" name="workorder_id">
-                {% for workorder in open_workorders %}
-                    <option value="{{ workorder.id }}">Apt {{ workorder.apartment }} - {{ workorder.type }}</option>
-                {% endfor %}
-            </select>
+            <input type="hidden" name="workorder_id" value="{{ updates[0].workorder_id}}">
         </div>
 
         <div class="form-group">
-            <input class="form-control" name="status" placeholder="Status Update" type="text"/>
+            <input class="form-control" name="status" placeholder="New Status" type="text"/>
         </div>
 
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-primary" type="submit">Update</button>
     </form>
 {% endblock %}

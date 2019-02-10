@@ -40,6 +40,18 @@ main .form-check
     width: auto;
 }
 
+main .top-container
+{
+  background-color: #d1edef;
+  margin-bottom: 10px;
+  padding: 20px 15px 1px 15px;
+}
+
+main .top-text
+{
+  text-align: left;
+}
+
 main
 {
     /* scroll horizontally as needed */

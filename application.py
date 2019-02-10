@@ -25,6 +25,7 @@ class Workorder(db.Model):
     type = db.Column(db.Text, nullable=True)
     description = db.Column(db.Text, nullable=True)
     closed = db.Column(db.Integer, nullable=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     updates = db.relationship('Update', backref='workorder', lazy='selectin')
 
     def __init__(self, apartment, type, description, closed):
@@ -35,12 +36,16 @@ class Workorder(db.Model):
 
 class Update(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Text, nullable=True)
+    count = db.Column(db.Integer, nullable=True)
     status = db.Column(db.Text, nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     workorder_id = db.Column(db.Integer, db.ForeignKey('workorder.id'))
 
 
-    def __init__(self, status, workorder_id):
+    def __init__(self, type, count, status, workorder_id):
+        self.type = type
+        self.count = count
         self.status = status
         self.workorder_id = workorder_id
 
@@ -61,23 +66,21 @@ def after_request(response):
     return response
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
     """Show open workorders"""
-    #open_workorders = Workorder.query.filter_by(closed=0)
-    #open_workorders = (db.session.query(Workorder,Update).filter(Workorder.id == Update.workorder_id).filter_by(closed=0))
-    #open_workorders = db.session.query(Workorder, Update).join(Update)
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
 
-    #open_workorders = Workorder.query.join(Update, Workorder.id==Update.workorder_id).\
-    #    add_columns(Workorder.apartment, Workorder.type, Workorder.description, Update.status).\
-    #    filter(Workorder.closed==0)
+        workorder_id = request.form.get("workorder_id")
+        updates = db.session.query(Update).filter(Update.workorder_id==workorder_id)
+        return render_template("update.html", updates=updates)
 
-    open_workorders = db.session.query(Workorder).\
-        join(Update, Workorder.id==Update.workorder_id).\
-        add_columns(Workorder.apartment, Workorder.type, Workorder.description, Update.status, Update.timestamp).\
-        filter(Workorder.closed==0)
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
 
-    return render_template("index.html", open_workorders=open_workorders)
+        open_workorders = db.session.query(Workorder).filter(Workorder.closed==0)
+        return render_template("index.html", open_workorders=open_workorders)
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -96,7 +99,8 @@ def add():
         db.session.commit()
 
         # Add new update
-        new_update = Update("Task Created", new_workorder.id)
+        count = db.session.query(Update).filter(Update.workorder_id==new_workorder.id).filter(Update.type=="Start").count()
+        new_update = Update("Start", 0, "Start Task", new_workorder.id)
         db.session.add(new_update)
         db.session.commit()
 
@@ -120,7 +124,8 @@ def close():
 
         # Add final update
         status = request.form.get("status")
-        new_update = Update(status, workorder_id)
+        count = db.session.query(Update).filter(Update.workorder_id==workorder_id).filter(Update.type=="Finish").count()
+        new_update = Update("Finish", 0, status, workorder_id)
         db.session.add(new_update)
         db.session.commit()
 
@@ -149,13 +154,13 @@ def update():
         # Add new status
         workorder_id = request.form.get("workorder_id")
         status = request.form.get("status")
-        new_update = Update(status, workorder_id)
+        count = db.session.query(Update).filter(Update.workorder_id==workorder_id).filter(Update.type=="Update").count()
+        new_update = Update("Update", count, status, workorder_id)
         db.session.add(new_update)
         db.session.commit()
 
-        return redirect("/")
+        # Query list of all updates
+        updates = db.session.query(Update).filter(Update.workorder_id==workorder_id)
+        return render_template("update.html", updates=updates)
 
-    # User reached route via GET (as by clicking a link or via redirect)
-    else:
-        open_workorders = Workorder.query.filter_by(closed=0)
-        return render_template("update.html", open_workorders=open_workorders)
+    # Currently no way to reach route via GET (as by clicking a link or via redirect)
