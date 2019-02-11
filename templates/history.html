@@ -7,7 +7,7 @@
 {% block main %}
     <table class="table table-bordered">
         <thead>
-            <th>Apartment</th>
+            <th>Location</th>
             <th>Type</th>
             <th>Description</th>
             <th>Status</th>
@@ -16,7 +16,7 @@
         <tbody>
             {% for update in updates %}
             <tr>
-                <td>{{ update.workorder.apartment }}</td>
+                <td>{{ update.workorder.location }}</td>
                 <td>{{ update.workorder.type }}</td>
                 <td>{{ update.workorder.description }}</td>
                 <td>{{ update.status }}</td>

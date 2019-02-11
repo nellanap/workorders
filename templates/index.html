@@ -7,7 +7,7 @@
 {% block main %}
     <table class="table table-bordered">
         <thead>
-            <th>Apartment</th>
+            <th>Location</th>
             <th>Type</th>
             <th>Description</th>
             <th>Timestamp</th>
@@ -17,7 +17,7 @@
             <form action="/" method="post">
             {% for workorder in open_workorders %}
             <tr>
-                <td>{{ workorder.apartment }}</td>
+                <td>{{ workorder.location }}</td>
                 <td>{{ workorder.type }}</td>
                 <td>{{ workorder.description }}</td>
                 <td>{{ moment(workorder.timestamp).format('LLL') }}</td>

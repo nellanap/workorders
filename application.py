@@ -17,19 +17,17 @@ db = SQLAlchemy(app)
 moment = Moment(app)
 
 
-
-
 class Workorder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    apartment = db.Column(db.Text, nullable=True)
+    location = db.Column(db.Text, nullable=True)
     type = db.Column(db.Text, nullable=True)
     description = db.Column(db.Text, nullable=True)
     closed = db.Column(db.Integer, nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     updates = db.relationship('Update', backref='workorder', lazy='selectin')
 
-    def __init__(self, apartment, type, description, closed):
-        self.apartment = apartment
+    def __init__(self, location, type, description, closed):
+        self.location = location
         self.type = type
         self.description = description
         self.closed = closed
@@ -90,11 +88,11 @@ def add():
     if request.method == "POST":
 
         # Add new workorder
-        apartment=request.form.get("apartment")
+        location=request.form.get("location")
         type=request.form.get("type")
         description=request.form.get("description")
         closed = 0
-        new_workorder = Workorder(apartment, type, description, closed)
+        new_workorder = Workorder(location, type, description, closed)
         db.session.add(new_workorder)
         db.session.commit()
 

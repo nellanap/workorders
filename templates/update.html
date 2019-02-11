@@ -4,7 +4,7 @@
 
     <div class="container, top-container">
         <p class="top-text">
-            <b>Apartment</b>: {{ updates[0].workorder.apartment }}<br>
+            <b>Location</b>: {{ updates[0].workorder.location }}<br>
             <b>Type</b>: {{ updates[0].workorder.type }}<br>
             <b>Description</b>: {{ updates[0].workorder.description }}<br>
         </p>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="form-group">
-            <input class="form-control" name="status" placeholder="New Status" type="text"/>
+            <textarea class="form-control" placeholder="New Status" name="status" rows="5" type="text"></textarea>
         </div>
 
         <button class="btn btn-primary" type="submit">Update</button>
